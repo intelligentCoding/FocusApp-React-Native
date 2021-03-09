@@ -20,11 +20,12 @@ export const RoundedButton = ({
 const styles = (size) =>
   StyleSheet.create({
     radius: {
-      // flex: 1,
+      // flex: 0.3,
       borderRadius: size / 2,
       width: size,
       height: size,
       alignItems: 'center',
+      justifyContent: 'center',
       borderColor: 'white',
       borderWidth: 2
     },

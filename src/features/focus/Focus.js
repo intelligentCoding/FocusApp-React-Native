@@ -6,7 +6,6 @@ import {fontSizes, spacing} from "../../utils/sizes";
 import {colors } from "../../utils/colors"
 export const Focus = ({ addSubject }) => {
   const [tempItem, setTempItem] = useState(null);
-    console.log(tempItem);
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
