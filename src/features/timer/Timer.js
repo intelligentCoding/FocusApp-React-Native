@@ -5,9 +5,12 @@ import { spacing } from "../../utils/sizes";
 import { CountDown } from "../../components/CountDown";
 import { RoundedButton } from '../../components/RoundedButton';
 import { ProgressBar } from 'react-native-paper';
+import {useKeepAwake  } from 'expo-keep-awake';
 import {Timing} from './Timing';
 
 export const Timer = ({focusSubject}) => {
+    useKeepAwake();
+
     const [minutes, setMinutes] = useState()
     const [isStarted, setIsStarted] = useState(false);
     const [progress, setProgress] = useState(0);
@@ -34,22 +37,22 @@ export const Timer = ({focusSubject}) => {
                 <View style={styles.buttonWrapper}>
                         <Timing onChangeTime={changeTime}/>
                 </View>
-            <View stye={styles.buttonWrapper}>
+            </View>
+            <View style={styles.buttonWrapper}>
                     {isStarted ? (
-                        <RoundedButton title="pause" size={100} onPress={ () => setIsStarted(false)}/>
+                        <RoundedButton title="pause" size={200} onPress={ () => setIsStarted(false)}/>
                     ) : (
 
-                    <RoundedButton title="start" size={100} onPress={ () => setIsStarted(true)}/>
+                    <RoundedButton title="start" size={200} onPress={ () => setIsStarted(true)}/>
                     )}
                 </View>
-            </View>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        // flex: 1
+        flex: 1
     },
      title:{
         color: colors.white,
@@ -72,5 +75,14 @@ const styles = StyleSheet.create({
          justifyContent: 'center',
          alignItems: 'center',
          paddingTop: 50
+     }, 
+     buttonWrapper2: {
+         flex: 1,
+        //  flexDirection: 'row',
+        //  flex: 0.5, 
+         padding: 15,
+         justifyContent: 'center',
+         alignItems: 'center',
+         paddingTop: 200
      }
 })
