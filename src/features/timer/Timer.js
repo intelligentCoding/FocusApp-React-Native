@@ -8,7 +8,7 @@ import { ProgressBar } from "react-native-paper";
 import { useKeepAwake } from "expo-keep-awake";
 import { Timing } from "./Timing";
 const DEFAULT_TIME = 0.1;
-export const Timer = ({ focusSubject }) => {
+export const Timer = ({ focusSubject, onTimerEnd, clearSubject}) => {
   useKeepAwake();
 
   const [minutes, setMinutes] = useState(DEFAULT_TIME);
@@ -20,7 +20,7 @@ export const Timer = ({ focusSubject }) => {
     setIsStarted(false);
   };
   const onProgress = (progress) => {
-    setProgress(progress);
+    setProgress(progress / 100);
   };
   const vibrate = () => {
       if(Platform.OS === 'ios'){
@@ -35,6 +35,7 @@ export const Timer = ({ focusSubject }) => {
       setMinutes(DEFAULT_TIME);
       setProgress(1);
       setIsStarted(false);
+      onTimerEnd();
 
   }
   return (
@@ -44,8 +45,8 @@ export const Timer = ({ focusSubject }) => {
           <CountDown
             minutes={minutes}
             isPaused={!isStarted}
-            onProgress={onProgress}
             onEnd={onEnd}
+            onProgress={onProgress}
           />
         </View>
         <Text style={styles.title}>Focusing on : </Text>
@@ -64,18 +65,26 @@ export const Timer = ({ focusSubject }) => {
       <View style={styles.buttonWrapper}>
         {isStarted ? (
           <RoundedButton
-            title="pause"
+            title="Pause"
             size={200}
             onPress={() => setIsStarted(false)}
           />
         ) : (
           <RoundedButton
-            title="start"
+            title="Start"
             size={200}
             onPress={() => setIsStarted(true)}
           />
         )}
       </View>
+        <View style={styles.clearSubject}>
+        <RoundedButton
+            title="Cancel"
+            size={50}
+            style={{fontSize: 10}}
+            onPress={() => clearSubject()}
+          />
+        </View>
     </View>
   );
 };
@@ -104,7 +113,7 @@ const styles = StyleSheet.create({
     padding: 15,
     justifyContent: "center",
     alignItems: "center",
-    paddingTop: 50,
+    paddingTop: 70,
   },
   buttonWrapper2: {
     flex: 1,
@@ -115,4 +124,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: 200,
   },
+  clearSubject: {
+    paddingBottom: 25,
+    paddingLeft: 25,
+  }
 });

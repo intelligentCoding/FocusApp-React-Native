@@ -5,7 +5,7 @@ import { RoundedButton } from '../../components/RoundedButton';
 import {fontSizes, spacing} from "../../utils/sizes";
 import {colors } from "../../utils/colors"
 export const Focus = ({ addSubject }) => {
-  const [tempItem, setTempItem] = useState(null);
+  const [subject, setSubject] = useState(null);
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
@@ -14,15 +14,15 @@ export const Focus = ({ addSubject }) => {
           <TextInput
             style={{ flex: 1, marginRight: spacing.md }}
             onSubmitEditing={({ nativeEvent }) => {
-              setTempItem(nativeEvent.text);
+              setSubject(nativeEvent.text);
             }}
-            onChangeText={text => setTempItem(text)}
+            onChangeText={text => setSubject(text)}
           />
           <RoundedButton
             size={40}
             title="+"
             onPress={() => {
-              addSubject(tempItem); 
+              addSubject(subject); 
             }}
           /> 
         </View>
