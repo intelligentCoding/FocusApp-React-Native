@@ -1,131 +1,127 @@
-import React, { useState } from "react";
-import { View, StyleSheet, Text, Platform, Vibration} from "react-native";
-import { colors } from "../../utils/colors";
-import { spacing } from "../../utils/sizes";
-import { CountDown } from "../../components/CountDown";
-import { RoundedButton } from "../../components/RoundedButton";
-import { ProgressBar } from "react-native-paper";
+import React, { useState, useEffect } from "react";
+import { View, StyleSheet, Vibration } from "react-native";
+import { ProgressBar, Text } from "react-native-paper";
+import { Audio } from "expo-av";
 import { useKeepAwake } from "expo-keep-awake";
+
+import { RoundedButton } from "../../components/RoundedButton";
+import { Countdown } from "../../components/CountDown"
 import { Timing } from "./Timing";
-const DEFAULT_TIME = 0.1;
-export const Timer = ({ focusSubject, onTimerEnd, clearSubject}) => {
+
+export const Timer = ({ subject, clearSubject, onTimerEnd }) => {
   useKeepAwake();
+  
+  const soundObject = new Audio.Sound();
 
-  const [minutes, setMinutes] = useState(DEFAULT_TIME);
-  const [isStarted, setIsStarted] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const changeTime = (min) => {
-    setMinutes(min);
+  const [minutes, setMinutes] = useState(0.1);
+  const [isStarted, setStarted] = useState(false);
+  const [pauseCounter, setPauseCounter] = useState(0);
+  const [progress, setProgress] = useState(1);
+
+  const onProgress = (p) => {
+    setProgress(p / 100);
+  };
+
+  const onPause = () => {
+    setPauseCounter(pauseCounter + 1);
+  };
+
+  const onEnd = async () => {
+    try {
+      await soundObject.loadAsync(require("../../../assets/bell.mp3"));
+      await soundObject.playAsync();
+      const interval = setInterval(() => Vibration.vibrate(5000), 1000);
+      setTimeout(() => {
+        clearInterval(interval);
+      }, 10000);
+    } catch (error) {
+      console.log(error);
+    }
+
     setProgress(1);
-    setIsStarted(false);
+    setStarted(false);
+    setMinutes(20);
+    onTimerEnd();
   };
-  const onProgress = (progress) => {
-    setProgress(progress / 100);
-  };
-  const vibrate = () => {
-      if(Platform.OS === 'ios'){
-          const interval = setInterval(()=> Vibration.vibrate(), 1000);
-          setTimeout(() =>clearInterval(interval), 1000)
-      } else {
-          Vibration.vibrate(10000);
-      }
-  }
-  const onEnd = () => {
-      vibrate();
-      setMinutes(DEFAULT_TIME);
-      setProgress(1);
-      setIsStarted(false);
-      onTimerEnd();
 
-  }
+  const changeTime = (min) => () => {
+    setProgress(1);
+    setStarted(false);
+    setMinutes(min);
+  };
+
+  useEffect(() => {
+    return async () => {
+      await soundObject.unloadAsync();
+    };
+  }, []);
+
   return (
     <View style={styles.container}>
-      <View style={{ paddingTop: spacing.xl }}>
-        <View style={styles.countdown}>
-          <CountDown
-            minutes={minutes}
-            isPaused={!isStarted}
-            onEnd={onEnd}
-            onProgress={onProgress}
-          />
-        </View>
-        <Text style={styles.title}>Focusing on : </Text>
-        <Text style={styles.task}>{focusSubject}</Text>
-        <View style={{ paddingTop: spacing.sm }}>
-          <ProgressBar
-            progress={progress}
-            color="#5E84E2"
-            style={{ height: 10 }}
-          />
-        </View>
-        <View style={styles.buttonWrapper}>
-          <Timing onChangeTime={changeTime} />
+      <View style={styles.countdown}>
+        <Countdown
+          minutes={minutes}
+          isPaused={!isStarted}
+          onPause={onPause}
+          onEnd={onEnd}
+          onProgress={onProgress}
+        />
+        <View style={{ padding: 50 }}>
+          <Text style={styles.title}>Focusing on:</Text>
+          <Text style={styles.task}>{subject}</Text>
         </View>
       </View>
-      <View style={styles.buttonWrapper}>
-        {isStarted ? (
-          <RoundedButton
-            title="Pause"
-            size={200}
-            onPress={() => setIsStarted(false)}
-          />
+      <View>
+        <ProgressBar
+          progress={progress}
+          color="#5E84E2"
+          style={{ height: 10 }}
+        />
+      </View>
+
+      <View style={styles.buttonWrapper()}>
+        <Timing changeTime={changeTime} />
+      </View>
+
+      <View style={styles.buttonWrapper({ flex: 0.3 })}>
+        {!isStarted ? (
+          <RoundedButton title="start" onPress={() => setStarted(true)} />
         ) : (
-          <RoundedButton
-            title="Start"
-            size={200}
-            onPress={() => setIsStarted(true)}
-          />
+          <RoundedButton title="pause" onPress={() => setStarted(false)} />
         )}
       </View>
-        <View style={styles.clearSubject}>
-        <RoundedButton
-            title="Cancel"
-            size={50}
-            style={{fontSize: 10}}
-            onPress={() => clearSubject()}
-          />
-        </View>
+      <View style={styles.clearSubject}>
+        <RoundedButton title="-" size={50} onPress={() => clearSubject()} />
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: "#252250",
     flex: 1,
-  },
-  title: {
-    color: colors.white,
-    textAlign: "center",
-  },
-  task: {
-    color: colors.white,
-    fontWeight: "bold",
-    textAlign: "center",
   },
   countdown: {
-    flex: 0,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  buttonWrapper: {
-    flexDirection: "row",
-    flex: 0.5,
-    padding: 15,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingTop: 70,
-  },
-  buttonWrapper2: {
     flex: 1,
-    //  flexDirection: 'row',
-    //  flex: 0.5,
-    padding: 15,
-    justifyContent: "center",
     alignItems: "center",
-    paddingTop: 200,
+    justifyContent: "center",
   },
+  title: { color: "white", textAlign: "center" },
+  task: { color: "white", fontWeight: "bold", textAlign: "center" },
+  buttonWrapper: ({
+    flex = 0.25,
+    padding = 15,
+    justifyContent = "center",
+  } = {}) => ({
+    flex,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent,
+    padding,
+  }),
   clearSubject: {
     paddingBottom: 25,
     paddingLeft: 25,
-  }
+  },
 });

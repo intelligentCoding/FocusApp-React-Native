@@ -1,27 +1,32 @@
-import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Text } from "react-native";
-import { colors } from "../utils/colors";
+import React, { useEffect, useState } from "react";
+import { Text, View, StyleSheet } from "react-native";
 import { fontSizes, spacing } from "../utils/sizes";
+
 const minutesToMillis = (min) => min * 1000 * 60;
-//if time is smaller then append the zero
 const formatTime = (time) => (time < 10 ? `0${time}` : time);
-export const CountDown = ({ minutes = 20, isPaused, onProgress, onEnd }) => {
+
+export const Countdown = ({
+  minutes = 20,
+  isPaused,
+  onStart = () => {},
+  onPause = () => {},
+  onEnd = () => {},
+  onProgress = () => {},
+}) => {
   const [millis, setMillis] = useState(minutesToMillis(minutes));
-  
   const interval = React.useRef(null);
 
-  const countdown = () => {
+  const countDown = () =>
     setMillis((time) => {
       if (time === 0) {
         clearInterval(interval.current);
-        onEnd()
+        onEnd();
         return time;
       }
       const timeLeft = time - 1000;
       onProgress((timeLeft / minutesToMillis(minutes)) * 100);
       return timeLeft;
     });
-  };
 
   useEffect(() => {
     setMillis(minutesToMillis(minutes));
@@ -29,11 +34,13 @@ export const CountDown = ({ minutes = 20, isPaused, onProgress, onEnd }) => {
 
   useEffect(() => {
     if (isPaused) {
+      onPause();
       if (interval.current) clearInterval(interval.current);
       return;
     }
-    console.log("%%%%%%%%%%%%%%%%%%%")
-    interval.current = setInterval(countdown, 1000);
+    onStart();
+    interval.current = setInterval(countDown, 1000);
+
     return () => clearInterval(interval.current);
   }, [isPaused]);
 
@@ -45,13 +52,12 @@ export const CountDown = ({ minutes = 20, isPaused, onProgress, onEnd }) => {
     </Text>
   );
 };
-
 const styles = StyleSheet.create({
   text: {
-    fontSize: fontSizes.xxxxl,
+    fontSize: fontSizes.xxxl,
     fontWeight: "bold",
-    color: colors.white,
+    color: "#fff",
     padding: spacing.lg,
-    backgroundColor: "rgba(94,132,226,0.3)",
+    backgroundColor: "rgba(94, 132, 226, 0.3)",
   },
 });

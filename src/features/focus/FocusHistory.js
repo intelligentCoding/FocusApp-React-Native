@@ -1,36 +1,42 @@
-import React from "react";
-import { View, StyleSheet, FlatList, Text, SafeAreaView } from "react-native";
-import { RoundedButton } from "../../components/RoundedButton";
+import React, { useState } from "react";
+import {
+  View,
+  StyleSheet,
+  Text,
+  FlatList,
+  SafeAreaView,
+  AsyncStorage,
+} from "react-native";
+// import AsyncStorage from '@react-native-async-storage/async-storage'
+
 import { fontSizes, spacing } from "../../utils/sizes";
+import { RoundedButton } from "../../components/RoundedButton";
 
 export const FocusHistory = ({ focusHistory, setFocusHistory }) => {
   const clearHistory = () => {
-    setFocusHistory([])
+    setFocusHistory([]);
   };
-
-  const HistoryItem = ({item, index})=> {
-      return (
-          <Text style={styles.historyItem(item.status)}>
-              {JSON.stringify(item)}
-          </Text>
-      )
-  }
 
   return (
     <>
-      <SafeAreaView style={{ flex: 1 }}>
-        <Text style={styles.title}>Things we have focused on</Text>
+      <SafeAreaView style={{ flex: 0.5, alignItems: "center" }}>
+        <Text style={{ fontSize: fontSizes.lg, color: "white" }}>
+          Things we've focused on
+        </Text>
         {!!focusHistory.length && (
           <FlatList
-            style={{ width: "100%", height: "100%" }}
-            contentContainerStyle={{ flex: 1, alignItems: "center" }}
+            style={{ width: "100%", height: "100%", paddingTop: 16 }}
+            contentContainerStyle={{ alignItems: "center" }}
             data={focusHistory}
             renderItem={({ item, index }) => (
-                <Text style={styles.historyItem(item.status)}>
-                  {JSON.stringify(item)}
-                </Text>
-              )}
+              <Text style={styles.historyItem(item.status)}>
+                {item.subject}
+              </Text>
+            )}
           />
+        )}
+        {!focusHistory.length && (
+          <Text style={{ color: "white" }}>Nothing yet</Text>
         )}
       </SafeAreaView>
       <View style={styles.clearContainer}>
@@ -41,16 +47,12 @@ export const FocusHistory = ({ focusHistory, setFocusHistory }) => {
 };
 
 const styles = StyleSheet.create({
-        historyItem: (status) => ({
-            color: status > 1 ? 'red' : 'green',
-            fontSize: fontSizes.md,
-        }),
-        title: {
-            color: 'white',
-            fontSize: fontSizes.lg
-        },
-        clearContainer: {
-            alignItems: "center",
-            padding: spacing.sm,
-          },
-    })
+  historyItem: (status) => ({
+    color: status > 0 ? "green" : "red",
+    fontSize: fontSizes.md,
+  }),
+  clearContainer: {
+    alignItems: "center",
+    padding: spacing.sm,
+  },
+});
