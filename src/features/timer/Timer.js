@@ -5,12 +5,12 @@ import { Audio } from "expo-av";
 import { useKeepAwake } from "expo-keep-awake";
 
 import { RoundedButton } from "../../components/RoundedButton";
-import { Countdown } from "../../components/CountDown"
+import { Countdown } from "../../components/CountDown";
 import { Timing } from "./Timing";
 
 export const Timer = ({ subject, clearSubject, onTimerEnd }) => {
   useKeepAwake();
-  
+
   const soundObject = new Audio.Sound();
 
   const [minutes, setMinutes] = useState(0.1);
@@ -99,7 +99,7 @@ export const Timer = ({ subject, clearSubject, onTimerEnd }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#252250",
+    backgroundColor: "#bb2167",
     flex: 1,
   },
   countdown: {

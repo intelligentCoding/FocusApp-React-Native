@@ -6,7 +6,14 @@ import { uuidv4 } from './src/utils/uuid';
 import { Timer } from './src/features/timer/Timer';
 import { Focus } from './src/features/focus/Focus';
 import { FocusHistory } from './src/features/focus/FocusHistory';
+import { LogBox } from "react-native";
 
+LogBox.ignoreLogs([
+  "Your project is accessing the following APIs from a deprecated global rather than a module import: Constants (expo- constants).",
+]);
+LogBox.ignoreLogs([
+  "Warning: Cannot update a component from inside the function body of a different component.",
+]);
 export default function App() {
   const [focusSubject, setFocusSubject] = useState(null);
   const [focusHistory, setFocusHistory] = useState([]);
@@ -76,5 +83,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  focusContainer: { flex: 1, backgroundColor: '#8b00a3' },
+  focusContainer: { flex: 1, backgroundColor: "#bb2167" },
 });

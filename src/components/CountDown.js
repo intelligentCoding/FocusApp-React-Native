@@ -11,7 +11,7 @@ export const Countdown = ({
   onStart = () => {},
   onPause = () => {},
   onEnd = () => {},
-  onProgress = () => {},
+  onProgress,
 }) => {
   const [millis, setMillis] = useState(minutesToMillis(minutes));
   const interval = React.useRef(null);
@@ -20,11 +20,9 @@ export const Countdown = ({
     setMillis((time) => {
       if (time === 0) {
         clearInterval(interval.current);
-        onEnd();
         return time;
       }
       const timeLeft = time - 1000;
-      onProgress((timeLeft / minutesToMillis(minutes)) * 100);
       return timeLeft;
     });
 
@@ -32,6 +30,12 @@ export const Countdown = ({
     setMillis(minutesToMillis(minutes));
   }, [minutes]);
 
+  useEffect(()=>{
+    onProgress((millis / minutesToMillis(minutes)) * 100);
+    if(millis ===0){
+      onEnd();
+    }
+  }, [millis])
   useEffect(() => {
     if (isPaused) {
       onPause();
@@ -58,6 +62,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#fff",
     padding: spacing.lg,
-    backgroundColor: "rgba(94, 132, 226, 0.3)",
+    backgroundColor: "#bb2167",
   },
 });
